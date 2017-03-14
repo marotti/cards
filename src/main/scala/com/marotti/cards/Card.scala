@@ -3,32 +3,37 @@ package com.marotti.cards
 import com.marotti.cards.Suit._
 import com.marotti.cards.FaceCardType.{FaceCardType, _}
 
-abstract class Card {
+abstract class Card(n: Any, s: Suit) extends Ordered [Card] {
   def numericValue(): Int
 
-  def isGreaterThan(that: Card): Boolean = {
-    this.numericValue() > that.numericValue()
+  def compare (that: Card) = this.numericValue().compare(that.numericValue())
+  def suit = s
+
+  def equalsWithSuit(that: Card): Boolean = {
+    compare(that) match {
+      case 0 => this.suit == that.suit
+      case _ => false
+    }
   }
 
-  def isEqualTo(that: Card): Boolean = {
-    this.numericValue() == that.numericValue()
-  }
+  override def toString() = "" + n + s
+  def toVerboseString(): String
 }
 
-protected case class NumberCard(n: Int, s: Suit) extends Card {
+protected case class NumberCard(n: Int, s: Suit) extends Card(n, s) {
   def numericValue(): Int = {
     n
   }
 
-  override def toString() = "" + n + " " + s.printValue
+  def toVerboseString() = "" + n + " " + s.printValue
 }
 
-protected case class FaceCard(n: FaceCardType, s: Suit) extends Card {
+protected case class FaceCard(n: FaceCardType, s: Suit) extends Card(n, s) {
   def numericValue(): Int = {
     n.numericVal
   }
 
-  override def toString() = "" + n.printValue + " " + s.printValue
+  def toVerboseString() = "" + n.printValue + " " + s.printValue
 }
 
 case class CardException(message: String = "", cause: Throwable = null) extends Exception(message, cause)
@@ -48,7 +53,7 @@ object Card {
   def convertSuit(s: String) :Suit = {
     def suit: Option[Suit] = Suit.withNameOpt(s)
     suit match {
-      case None => throw CardException("Face Card values can only be T, J, Q, K, or A")
+      case None => throw CardException("Suit can only be the values of H, D, C, or S")
       case _ => return suit.get
     }
   }

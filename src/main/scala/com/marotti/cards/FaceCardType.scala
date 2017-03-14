@@ -1,5 +1,7 @@
 package com.marotti.cards
 
+import scala.language.implicitConversions
+
 object FaceCardType extends Enumeration {
   protected case class Val(numericVal: Int, printValue: String) extends super.Val
   implicit def valueToFaceCardVal(x: Value) = x.asInstanceOf[Val]
